@@ -1,6 +1,8 @@
 ﻿using CodeFlow.API.Data;
 using CodeFlow.API.Models.Domain;
 using CodeFlow.API.Models.DTO;
+using CodeFlow.API.Repositories.Implementation;
+using CodeFlow.API.Repositories.Interface;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -12,11 +14,11 @@ namespace CodeFlow.API.Controllers
     [ApiController]
     public class CategoryController : ControllerBase
     {
-        private readonly ApplicationDbContext dbContext;
+        private readonly ICategoryRepository categoryRepository;
 
-        public CategoryController(ApplicationDbContext dbContext)
+        public CategoryController(ICategoryRepository categoryRepository)
         {
-            this.dbContext = dbContext;
+            this.categoryRepository = categoryRepository;
         }
 
         [HttpPost]
@@ -29,8 +31,7 @@ namespace CodeFlow.API.Controllers
                 UrlHandle = request.UrlHandle
             };
 
-            await dbContext.Categories.AddAsync(category);
-            await dbContext.SaveChangesAsync();
+            await categoryRepository.CreateAsync(category);
 
             // Map Domain Model to DTO
             var response = new CategoryDto
